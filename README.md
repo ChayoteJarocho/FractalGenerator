@@ -1,8 +1,8 @@
 ## FractalGenerator
 
-```
 Tool to generate fractal images.
 
+```
 Usage: [-CIMAG][-CREAL][-D][-F][-H][-HELP][-I][-L][-M][-O][-P][-R][-W][-XMAX][-XMIN][-YMAX][-YMIN]
 
 -CIMAG <double> : For Julia, you can set the imaginary value of C. Default: 0.75
@@ -23,3 +23,8 @@ Usage: [-CIMAG][-CREAL][-D][-F][-H][-HELP][-I][-L][-M][-O][-P][-R][-W][-XMAX][-X
 -YMAX <double>  : Maximum y value of the plane, must be a positive double number. Default: 2.25
 -YMIN <double>  : Minimum y value of the plane, must be a positive double number. Default: -2.25
 ```
+
+Examples:
+
+![Mandelbrot](mandelbrot.bmp)
+![Julia](julia.bmp)
