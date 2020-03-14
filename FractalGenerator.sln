@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.89
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FractalGenerator", "FractalGenerator.csproj", "{7A7825EC-59B8-4FA8-B432-0BF31E6B3023}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7A7825EC-59B8-4FA8-B432-0BF31E6B3023}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A7825EC-59B8-4FA8-B432-0BF31E6B3023}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A7825EC-59B8-4FA8-B432-0BF31E6B3023}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A7825EC-59B8-4FA8-B432-0BF31E6B3023}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {958A19CA-681E-4904-B71B-76D9B0E015A9}
+	EndGlobalSection
+EndGlobal

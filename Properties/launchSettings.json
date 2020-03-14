@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FractalGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "-f  Mandelbrot -w 160 -h 100 -i 100 -r 10000 -a false"
+    }
+  }
+}
