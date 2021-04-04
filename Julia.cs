@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Numerics;
 
 namespace FractalGenerator
@@ -21,8 +20,8 @@ namespace FractalGenerator
         /// <param name="v">The vertical point in the complex plane.</param>
         protected override void Calculate(int x, int y, double h, double v)
         {
-            Complex z = new Complex(h, v);
-            Complex c = new Complex(Configuration.CReal, Configuration.CImaginary);
+            var z = new Complex(h, v);
+            var c = new Complex(Configuration.CReal, Configuration.CImaginary);
 
             int iterations = 0;
             do

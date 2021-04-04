@@ -6,10 +6,11 @@ namespace FractalGenerator
 {
     public class Newton : Fractal
     {
-        private readonly float _tol = .0001f;
-        private readonly Complex _r1 = new Complex(1.0, 0.0);
-        private readonly Complex _r2 = new Complex(-0.5, Math.Sin(2 * Math.PI / 3.0));
-        private readonly Complex _r3 = new Complex(-0.5, -Math.Sin(2 * Math.PI / 3.0));
+        private const float TOL = .0001f;
+
+        private readonly Complex _r1 = new(1.0, 0.0);
+        private readonly Complex _r2 = new(-0.5, Math.Sin(2 * Math.PI / 3.0));
+        private readonly Complex _r3 = new(-0.5, -Math.Sin(2 * Math.PI / 3.0));
 
         public Newton() : base()
         {
@@ -25,7 +26,7 @@ namespace FractalGenerator
         /// <param name="v">The vertical point in the complex plane.</param>
         protected override void Calculate(int x, int y, double h, double v)
         {
-            Complex z = new Complex(0.0, 0.0);
+            var z = new Complex(0.0, 0.0);
             int iterations = 0;
 
             do
@@ -43,9 +44,9 @@ namespace FractalGenerator
             }
             while (
                 iterations < Configuration.MaxIterations &&
-                _calculationArray[x, y].AbsZR1 >= _tol &&
-                _calculationArray[x, y].AbsZR2 >= _tol &&
-                _calculationArray[x, y].AbsZR2 >= _tol
+                _calculationArray[x, y].AbsZR1 >= TOL &&
+                _calculationArray[x, y].AbsZR2 >= TOL &&
+                _calculationArray[x, y].AbsZR2 >= TOL
             );
 
             CollectCommonCalculations(x, y, iterations, z);
@@ -66,15 +67,15 @@ namespace FractalGenerator
 
             int colorIndex = (int)(_calculationArray[x, y].Iterations * ColorBitDepth / _largestIteration);
 
-            if (_calculationArray[x, y].AbsZR1 < _tol)
+            if (_calculationArray[x, y].AbsZR1 < TOL)
             {
                 color = Color.FromArgb(ColorBitDepth - colorIndex, 0, 0);
             }
-            else if (_calculationArray[x, y].AbsZR2 <= _tol)
+            else if (_calculationArray[x, y].AbsZR2 <= TOL)
             {
                 color = Color.FromArgb(0, ColorBitDepth - colorIndex, 0);
             }
-            else if (_calculationArray[x, y].AbsZR3 <= _tol)
+            else if (_calculationArray[x, y].AbsZR3 <= TOL)
             {
                 color = Color.FromArgb(0, 0, ColorBitDepth - colorIndex);
             }

@@ -22,8 +22,8 @@ namespace FractalGenerator
         /// <param name="v">The vertical point in the complex plane.</param>
         protected override void Calculate(int x, int y, double h, double v)
         {
-            Complex z = new Complex(0.0, 0.0);
-            Complex c = new Complex(h, v);
+            var z = new Complex(0.0, 0.0);
+            var c = new Complex(h, v);
 
             int iterations = 0;
 
