@@ -1,8 +1,4 @@
-﻿#region Using directives
-
-using System.Numerics;
-
-#endregion
+﻿using System.Numerics;
 
 namespace FractalGenerator
 {
