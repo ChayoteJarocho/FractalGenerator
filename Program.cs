@@ -60,7 +60,7 @@ namespace FractalGenerator
                 };
 
                 fractal.Generate();
-                fractal.Open();
+                Fractal.Open();
             }
             catch(Exception e)
             {

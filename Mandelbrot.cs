@@ -57,7 +57,7 @@ namespace FractalGenerator
             else
             {
                 double it = _calculationArray[x, y].Iterations;
-                colorIndex = (int)(_colorBitDepth * Math.Pow(it/Configuration.MaxIterations, it/Configuration.MaxIterations));
+                colorIndex = (int)(ColorBitDepth * Math.Pow(it/Configuration.MaxIterations, it/Configuration.MaxIterations));
             }
 
             return Configuration.ArrayPalette[colorIndex];

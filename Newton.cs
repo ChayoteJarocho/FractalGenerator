@@ -64,19 +64,19 @@ namespace FractalGenerator
         {
             Color color;
 
-            int colorIndex = (int)(_calculationArray[x, y].Iterations * _colorBitDepth / _largestIteration);
+            int colorIndex = (int)(_calculationArray[x, y].Iterations * ColorBitDepth / _largestIteration);
 
             if (_calculationArray[x, y].AbsZR1 < _tol)
             {
-                color = Color.FromArgb(_colorBitDepth - colorIndex, 0, 0);
+                color = Color.FromArgb(ColorBitDepth - colorIndex, 0, 0);
             }
             else if (_calculationArray[x, y].AbsZR2 <= _tol)
             {
-                color = Color.FromArgb(0, _colorBitDepth - colorIndex, 0);
+                color = Color.FromArgb(0, ColorBitDepth - colorIndex, 0);
             }
             else if (_calculationArray[x, y].AbsZR3 <= _tol)
             {
-                color = Color.FromArgb(0, 0, _colorBitDepth - colorIndex);
+                color = Color.FromArgb(0, 0, ColorBitDepth - colorIndex);
             }
             else
             {
