@@ -7,24 +7,24 @@ namespace FractalGenerator
 {
     public class FastBitmap
     {        
-        private Bitmap _bitmap;
+        private readonly Bitmap _bitmap;
         private Rectangle _rectangle;
-        private BitmapData _bitmapData;
-        private IntPtr _imagePointer;
-        private PixelFormat _pixelFormat;
-        private int _pixelCount;
-        private int _depthInt;
-        private int _colorCount;
-        private byte[] _pixels;
+        private readonly BitmapData _bitmapData;
+        private readonly IntPtr _imagePointer;
+        private readonly PixelFormat _pixelFormat;
+        private readonly int _pixelCount;
+        private readonly int _depthInt;
+        private readonly int _colorCount;
+        private readonly byte[] _pixels;
 
         public FastBitmap()
         {
             _pixelFormat = Configuration.Depth switch
             {
-                Depths.Bits8 => PixelFormat.Format48bppRgb,
+                Depths.Bits8  => PixelFormat.Format48bppRgb,
                 Depths.Bits24 => PixelFormat.Format24bppRgb,
                 Depths.Bits32 => PixelFormat.Format32bppArgb,
-                _ => throw new ArgumentException($"Unrecognized depth: {Configuration.Depth}")
+                _             => throw new ArgumentException($"Unrecognized depth: {Configuration.Depth}")
             };
 
             // Verify the pixel format value
@@ -35,7 +35,7 @@ namespace FractalGenerator
                 case 32:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException($"Unsupported Pixel Format Size: {_pixelFormat.ToString()}");
+                    throw new ArgumentOutOfRangeException($"Unsupported Pixel Format Size: {_pixelFormat}");
             };
                     
             _bitmap = new Bitmap(Configuration.Width, Configuration.Height, _pixelFormat);
@@ -68,8 +68,6 @@ namespace FractalGenerator
 
         public Color GetPixel(int x, int y)
         {
-            Color color = Color.Empty;
-
             byte b, g, r, a;
 
             int i = ((y * Configuration.Width) + x) * _colorCount;
@@ -79,6 +77,7 @@ namespace FractalGenerator
                 throw new ArgumentException($"i >= Pixels.Length - ColorCount\r\n\ti: {i}\r\n\tPixels.Length {_pixels.Length}\r\n\tColorCount: {_colorCount}");
             }
 
+            Color color;
             switch (_depthInt)
             {
                 case 32:
@@ -99,7 +98,7 @@ namespace FractalGenerator
                     color = Color.FromArgb(c, c, c);
                     break;
                 default:
-                    throw new ArgumentException($"Unknown depth: {Configuration.Depth.ToString()}");
+                    throw new ArgumentException($"Unknown depth: {Configuration.Depth}");
             }
 
             return color;
@@ -126,7 +125,7 @@ namespace FractalGenerator
                     _pixels[i] = color.B;
                     break;
                 default:
-                    throw new ArgumentException($"Unknown depth SetPixel: {Configuration.Depth.ToString()}");
+                    throw new ArgumentException($"Unknown depth SetPixel: {Configuration.Depth}");
             }
         }
     }
