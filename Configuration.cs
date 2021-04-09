@@ -64,7 +64,7 @@ namespace FractalGenerator
         public static Depths Depth { get; private set; } = Depths.Bits24;
         public static FractalVariations FractalVariation { get; private set; } = FractalVariations.Mandelbrot;
         public static int Height { get; private set; } = 200;
-        public static int MaxIterations { get; private set; } = 256;
+        public static ulong MaxIterations { get; private set; } = 256;
         public static double Light { get; private set; } = 0.0;
         public static string OutputFileName { get; private set; } = "output.bmp";
         public static string MixPaletteFileName { get; private set; } = string.Empty;
@@ -242,7 +242,7 @@ namespace FractalGenerator
 
                     case ArgumentOption.MaxIterations:
                         {
-                            TryParseInt("Iterations", arg, out int i);
+                            TryParseULong("Iterations", arg, out ulong i);
                             if (i <= 0)
                             {
                                 throw new ArgumentException($"The passed Iterations value should be greater than zero: {arg}.");
@@ -415,6 +415,13 @@ namespace FractalGenerator
                 throw new ArgumentException($"The passed {name} value is not a valid integer: {value}.");
             }
         }
+        private static void TryParseULong(string name, string value, out ulong parsed)
+        {
+            if (!ulong.TryParse(value, out parsed))
+            {
+                throw new ArgumentException($"The passed {name} value is not a valid unsigned long: {value}.");
+            }
+        }
         private static void TryParseBool(string name, string value, out bool parsed)
         {
             if (!bool.TryParse(value, out parsed))
@@ -424,21 +431,22 @@ namespace FractalGenerator
         }
         private static void PrintArgumentFinalSelections()
         {
-            Log.Info($"    Fractal:            {FractalVariation}");
-            Log.Info($"    Color Depth:        {Depth}");
-            Log.Info($"    Iterations:         {MaxIterations}");
-            Log.Info($"    Light:              {Light}");
-            Log.Info($"    Radius:             {Radius}");
-            Log.Info($"    Resolution (W x H): {Width}, {Height}");
-            Log.Info($"    Center (X, Y):      {XCenter}, {YCenter}");
-            Log.Info($"    Zoom:               {Zoom}");
+            Log.Info($"    Async:              {Async}");
             Log.Info($"    C (Real, Imag):     {CReal}, {CImaginary}");
+            Log.Info($"    Center (X, Y):      {XCenter}, {YCenter}");
+            Log.Info($"    Color Depth:        {Depth}");
+            Log.Info($"    Fractal:            {FractalVariation}");
+            Log.Info($"    Light:              {Light}");
+            Log.Info($"    MaxIterations:      {MaxIterations}");
+            Log.Info($"    Mix Palette:        {MixPaletteFileName}");
             Log.Info($"    Output File:        {OutputFileName}");
             Log.Info($"    Palette:            {PaletteFileName}");
-            Log.Info($"    Mix Palette:        {MixPaletteFileName}");
+            Log.Info($"    Plane (W x H)       {PlaneWidth} x {PlaneHeight}");
+            Log.Info($"    Radius:             {Radius}");
+            Log.Info($"    Resolution (W x H): {Width}, {Height}");
             Log.Info($"    X (Min, Max)        {XMin}, {XMax}");
             Log.Info($"    Y (Min, Max)        {YMin}, {YMax}");
-            Log.Info($"    Plane (W x H)       {PlaneWidth} x {PlaneHeight}");
+            Log.Info($"    Zoom:               {Zoom}");
         }
     }
 }

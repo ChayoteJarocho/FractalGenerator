@@ -22,8 +22,7 @@ namespace FractalGenerator
         {
             var z = new Complex(h, v);
             var c = new Complex(Configuration.CReal, Configuration.CImaginary);
-
-            int iterations = 0;
+            ulong iterations = 0;
             do
             {
                 z = z * z + c;

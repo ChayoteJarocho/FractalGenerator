@@ -27,8 +27,7 @@ namespace FractalGenerator
         protected override void Calculate(int x, int y, double h, double v)
         {
             var z = new Complex(0.0, 0.0);
-            int iterations = 0;
-
+            ulong iterations = 0;
             do
             {
                 if (z.Magnitude > 0)

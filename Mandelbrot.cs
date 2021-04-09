@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Numerics;
 
-
 namespace FractalGenerator
 {
     public class Mandelbrot : Fractal
@@ -24,17 +23,13 @@ namespace FractalGenerator
         {
             var z = new Complex(0.0, 0.0);
             var c = new Complex(h, v);
-
-            int iterations = 0;
-
+            ulong iterations = 0;
             do
             {
                 z = z * z + c;
                 iterations++;
             }
             while (z.Magnitude < Configuration.Radius && iterations < Configuration.MaxIterations);
-
-            _calculationArray[x, y].Iterations = iterations; 
 
             CollectCommonCalculations(x, y, iterations, z);
         }

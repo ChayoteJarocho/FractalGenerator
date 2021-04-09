@@ -13,9 +13,8 @@ namespace FractalGenerator
 
         private bool _isCalculated;
         private readonly FastBitmap _bitmap;
-        private readonly object _lockCalculation;
         protected Calculation[,] _calculationArray;
-        protected long _largestIteration;
+        protected ulong _largestIteration;
         protected double _largestIterationLog;
 
         public Fractal()
@@ -25,7 +24,6 @@ namespace FractalGenerator
             _isCalculated = false;
             _bitmap = new FastBitmap();
             _calculationArray = new Calculation[Configuration.Width, Configuration.Height];
-            _lockCalculation = new object();
             _largestIteration = 1;
         }
 
@@ -81,7 +79,7 @@ namespace FractalGenerator
                 throw new InvalidOperationException("Must call Calculate before calling Paint!");
             }
 
-            Log.Info(false, "Painting fractal: ");
+            Log.Info("Painting fractal: ");
 
             _bitmap.Lock();
             
@@ -125,6 +123,8 @@ namespace FractalGenerator
                 }
             }
 
+            FindLargestIteration();
+
             // Indicate the column was finished
             Console.Write(".");
         }
@@ -152,18 +152,24 @@ namespace FractalGenerator
             Console.Write(".");
         }
 
-        protected void CollectCommonCalculations(int x, int y, int iterations, Complex z)
+        private void FindLargestIteration()
+        {
+            for (int y = 0; y < Configuration.Height; y++)
+            {
+                for (int x = 0; x < Configuration.Width; x++)
+                {
+                    if (_calculationArray[x,y].Iterations > _largestIteration)
+                    {
+                        _largestIteration = _calculationArray[x, y].Iterations;
+                    }
+                }
+            }
+        }
+
+        protected void CollectCommonCalculations(int x, int y, ulong iterations, Complex z)
         {
             _calculationArray[x, y].LastZ = z;
             _calculationArray[x, y].Iterations = iterations;
-
-            lock (_lockCalculation)
-            {
-                if (iterations > _largestIteration)
-                {
-                    _largestIteration = iterations;
-                }
-            }
         }
 
         protected static double ConvertPixelToHorizontal(int x) =>
