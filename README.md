@@ -28,5 +28,26 @@ Usage:
 
 Examples:
 
+#### Mandelbrot
+
+```
+FractalGenerator -fractal Mandelbrot -width 640 -height 480 -iterations 1500 -radius 100000
+```
+
 ![Mandelbrot](mandelbrot.bmp)
+
+### Julia
+
+```
+FractalGenerator -fractal Julia -width 640 -height 480 -iterations 100 -radius 10000 -palette copper.txt
+```
+
 ![Julia](julia.bmp)
+
+### Newton
+
+```
+FractalGenerator -fractal Newton -width 640 -height 480 -iterations 2000
+```
+
+![Newton](newton.bmp)
