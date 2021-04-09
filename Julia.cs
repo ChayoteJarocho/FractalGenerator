@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Numerics;
 
 namespace FractalGenerator
@@ -42,14 +43,14 @@ namespace FractalGenerator
         protected override Color GetColorForPixel(int x, int y)
         {
             int colorIndex;
-
             if (double.IsInfinity(_calculationArray[x, y].Iterations))
             {
                 colorIndex = 0;
             }
             else
             {
-                colorIndex = (int)(_calculationArray[x, y].Iterations * ColorBitDepth / Configuration.MaxIterations);
+                double it = _calculationArray[x, y].Iterations;
+                colorIndex = (int)(ColorBitDepth * Math.Pow(it / Configuration.MaxIterations, it / Configuration.MaxIterations));
             }
 
             return Configuration.ArrayPalette[colorIndex];
