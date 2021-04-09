@@ -26,32 +26,33 @@ namespace FractalGenerator
             XCenter,
             YCenter,
             Zoom
-        }        
-               
-        private static readonly int _defaultPaletteArrayLength = 256;
-        private static readonly string _folderNamePalettes = "palettes";
+        }
 
-        private static double _xWidth => 8.0 / Zoom;
-        private static double _xMaxAtOrigin => _xWidth / 2.0;
-        private static double _xMinAtOrigin => 0.0 - _xMaxAtOrigin;
-        private static double _yHeight => (Height * _xWidth) / Width;
-        private static double _yMaxAtOrigin => _yHeight / 2.0;
-        private static double _yMinAtOrigin => 0.0 - _yMaxAtOrigin;
+        private const int DefaultPaletteArrayLength = 256;
+        private const string FolderNamePalettes = "palettes";
 
-        public static Color[] ArrayPalette;
-        public static Color[] ArrayMixPalette;
-        
-        public static double Log2 { get; } = Math.Log(2.0);
-        public static string AbsolutePathPalettes => Path.Combine(Directory.GetCurrentDirectory(), _folderNamePalettes);
+        private static double XWidth => 8.0 / Zoom;
+        private static double XMaxAtOrigin => XWidth / 2.0;
+        private static double XMinAtOrigin => 0.0 - XMaxAtOrigin;
+        private static double YHeight => (Height * XWidth) / Width;
+        private static double YMaxAtOrigin => YHeight / 2.0;
+        private static double YMinAtOrigin => 0.0 - YMaxAtOrigin;
+
+        public static readonly Color[] ArrayPalette = new Color[DefaultPaletteArrayLength];
+        public static readonly Color[] ArrayMixPalette = new Color[DefaultPaletteArrayLength];
+
+        public static readonly double Log2 = Math.Log(2.0);
+        public static readonly string AbsolutePathPalettes = Path.Combine(Directory.GetCurrentDirectory(), FolderNamePalettes);
+
         public static string PaletteFilePath => Path.Combine(AbsolutePathPalettes, PaletteFileName);
-        public static string MixPaletteFilePath => (MixPaletteFileName != string.Empty) ?
+        public static string MixPaletteFilePath => (!string.IsNullOrWhiteSpace(MixPaletteFileName)) ?
             Path.Combine(AbsolutePathPalettes, MixPaletteFileName) :
             string.Empty;
 
-        public static double XMin => XCenter + _xMinAtOrigin;
-        public static double XMax => XCenter + _xMaxAtOrigin;
-        public static double YMin => YCenter + _yMinAtOrigin;
-        public static double YMax => YCenter + _yMaxAtOrigin;
+        public static double XMin => XCenter + XMinAtOrigin;
+        public static double XMax => XCenter + XMaxAtOrigin;
+        public static double YMin => YCenter + YMinAtOrigin;
+        public static double YMax => YCenter + YMaxAtOrigin;
 
         public static double PlaneHeight => Math.Abs(YMax) + Math.Abs(YMin);
         public static double PlaneWidth => Math.Abs(XMax) + Math.Abs(XMin);
@@ -63,7 +64,7 @@ namespace FractalGenerator
         public static Depths Depth { get; private set; } = Depths.Bits24;
         public static FractalVariations FractalVariation { get; private set; } = FractalVariations.Mandelbrot;
         public static int Height { get; private set; } = 200;
-        public static int MaxIterations { get; private set; } = 256;
+        public static ulong MaxIterations { get; private set; } = 256;
         public static double Light { get; private set; } = 0.0;
         public static string OutputFileName { get; private set; } = "output.bmp";
         public static string MixPaletteFileName { get; private set; } = string.Empty;
@@ -84,8 +85,8 @@ namespace FractalGenerator
         private static void AnalyzeArguments(string[] arguments)
         {
             ArgumentOption option = ArgumentOption.Initial;
-            string arg = string.Empty;
 
+            string arg;
             foreach (string argument in arguments)
             {
                 if (option != ArgumentOption.Fractal)
@@ -205,24 +206,13 @@ namespace FractalGenerator
 
                     case ArgumentOption.Depth:
                         {
-                            switch (arg)
+                            Depth = arg switch
                             {
-                                case "8":
-                                    Depth = Depths.Bits8;
-                                    break;
-
-                                case "24":
-                                    Depth = Depths.Bits24;
-                                    break;
-
-                                case "32":
-                                    Depth = Depths.Bits32;
-                                    break;
-
-                                default:
-                                    throw new ArgumentException($"The passed Depth value is not supported: {arg}.");
-                            }
-
+                                "8"  => Depths.Bits8,
+                                "24" => Depths.Bits24,
+                                "32" => Depths.Bits32,
+                                _    => throw new ArgumentException($"The passed Depth value is not supported: {arg}."),
+                            };
                             option = ArgumentOption.Initial;
                             break;
                         }
@@ -252,7 +242,7 @@ namespace FractalGenerator
 
                     case ArgumentOption.MaxIterations:
                         {
-                            TryParseInt("Iterations", arg, out int i);
+                            TryParseULong("Iterations", arg, out ulong i);
                             if (i <= 0)
                             {
                                 throw new ArgumentException($"The passed Iterations value should be greater than zero: {arg}.");
@@ -379,41 +369,37 @@ namespace FractalGenerator
 
                 Log.Info($"Opening palette file '{paletteFilePath}'...");
 
-                using (StreamReader streamReader = new StreamReader(paletteFilePath))
+                using var streamReader = new StreamReader(paletteFilePath);
+
+                int i = 0;
+                string? line;
+                while ((line = streamReader.ReadLine()) != null)
                 {
-                    int i = 0;
-                    string line;
-                    while ((line = streamReader.ReadLine()) != null)
+                    if (i < length)
                     {
-                        if (i < length)
+                        Match match = Regex.Match(line, pattern);
+                        if (match.Success)
                         {
-                            Match match = Regex.Match(line, pattern);
-                            if (match.Success)
-                            {
-                                float.TryParse(match.Groups["rColor"].Value, out float rColorRaw);
-                                float.TryParse(match.Groups["gColor"].Value, out float gColorRaw);
-                                float.TryParse(match.Groups["bColor"].Value, out float bColorRaw);
+                            float rColorRaw = float.Parse(match.Groups["rColor"].Value);
+                            float gColorRaw = float.Parse(match.Groups["gColor"].Value);
+                            float bColorRaw = float.Parse(match.Groups["bColor"].Value);
 
-                                int rColor = (int)(rColorRaw * 255);
-                                int gColor = (int)(gColorRaw * 255);
-                                int bColor = (int)(bColorRaw * 255);
+                            int rColor = (int)(rColorRaw * 255);
+                            int gColor = (int)(gColorRaw * 255);
+                            int bColor = (int)(bColorRaw * 255);
 
-                                palette[i] = Color.FromArgb(rColor, gColor, bColor);
-                            }
+                            palette[i] = Color.FromArgb(rColor, gColor, bColor);
                         }
-
-                        i++;
                     }
+
+                    i++;
                 }
             }
         }
         private static void CollectPalettes()
         {
-            ArrayPalette = new Color[_defaultPaletteArrayLength];
-            CreatePaletteArray(PaletteFilePath, _defaultPaletteArrayLength, ArrayPalette.AsSpan());
-
-            ArrayMixPalette = new Color[_defaultPaletteArrayLength];
-            CreatePaletteArray(MixPaletteFilePath, _defaultPaletteArrayLength, ArrayMixPalette.AsSpan());
+            CreatePaletteArray(PaletteFilePath, DefaultPaletteArrayLength, ArrayPalette.AsSpan());
+            CreatePaletteArray(MixPaletteFilePath, DefaultPaletteArrayLength, ArrayMixPalette.AsSpan());
         }
         private static void TryParseDouble(string name, string value, out double parsed)
         {
@@ -429,6 +415,13 @@ namespace FractalGenerator
                 throw new ArgumentException($"The passed {name} value is not a valid integer: {value}.");
             }
         }
+        private static void TryParseULong(string name, string value, out ulong parsed)
+        {
+            if (!ulong.TryParse(value, out parsed))
+            {
+                throw new ArgumentException($"The passed {name} value is not a valid unsigned long: {value}.");
+            }
+        }
         private static void TryParseBool(string name, string value, out bool parsed)
         {
             if (!bool.TryParse(value, out parsed))
@@ -438,21 +431,22 @@ namespace FractalGenerator
         }
         private static void PrintArgumentFinalSelections()
         {
-            Log.Info($"    Fractal:            {FractalVariation}");
-            Log.Info($"    Color Depth:        {Depth}");
-            Log.Info($"    Iterations:         {MaxIterations}");
-            Log.Info($"    Light:              {Light}");
-            Log.Info($"    Radius:             {Radius}");
-            Log.Info($"    Resolution (W x H): {Width}, {Height}");
-            Log.Info($"    Center (X, Y):      {XCenter}, {YCenter}");
-            Log.Info($"    Zoom:               {Zoom}");
+            Log.Info($"    Async:              {Async}");
             Log.Info($"    C (Real, Imag):     {CReal}, {CImaginary}");
+            Log.Info($"    Center (X, Y):      {XCenter}, {YCenter}");
+            Log.Info($"    Color Depth:        {Depth}");
+            Log.Info($"    Fractal:            {FractalVariation}");
+            Log.Info($"    Light:              {Light}");
+            Log.Info($"    MaxIterations:      {MaxIterations}");
+            Log.Info($"    Mix Palette:        {MixPaletteFileName}");
             Log.Info($"    Output File:        {OutputFileName}");
             Log.Info($"    Palette:            {PaletteFileName}");
-            Log.Info($"    Mix Palette:        {MixPaletteFileName}");
+            Log.Info($"    Plane (W x H)       {PlaneWidth} x {PlaneHeight}");
+            Log.Info($"    Radius:             {Radius}");
+            Log.Info($"    Resolution (W x H): {Width}, {Height}");
             Log.Info($"    X (Min, Max)        {XMin}, {XMax}");
             Log.Info($"    Y (Min, Max)        {YMin}, {YMax}");
-            Log.Info($"    Plane (W x H)       {PlaneWidth} x {PlaneHeight}");
+            Log.Info($"    Zoom:               {Zoom}");
         }
     }
 }

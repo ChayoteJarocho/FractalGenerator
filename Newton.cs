@@ -4,17 +4,21 @@ using System.Numerics;
 
 namespace FractalGenerator
 {
+    // Inspiration: https://www.mitchr.me/SS/newton/
     public class Newton : Fractal
     {
-        private readonly float _tol = .0001f;
-        private readonly Complex _r1 = new Complex(1.0, 0.0);
-        private readonly Complex _r2 = new Complex(-0.5, Math.Sin(2 * Math.PI / 3.0));
-        private readonly Complex _r3 = new Complex(-0.5, -Math.Sin(2 * Math.PI / 3.0));
+        private const float TOL = .0001f;
+
+        private Complex _r1;
+        private Complex _r2;
+        private Complex _r3;
 
         public Newton() : base()
         {
+            _r1 = new Complex(1, 0);
+            _r2 = new Complex(-0.5, Math.Sin(2.0 * Math.PI / 3.0));
+            _r3 = new Complex(-0.5, -Math.Sin(2.0 * Math.PI / 3.0));
         }
-
 
         /// <summary>
         /// Calculates the fractal value for each pixel using:
@@ -25,65 +29,57 @@ namespace FractalGenerator
         /// <param name="v">The vertical point in the complex plane.</param>
         protected override void Calculate(int x, int y, double h, double v)
         {
-            Complex z = new Complex(0.0, 0.0);
-            int iterations = 0;
-
+            var z = new Complex(h, v);
+            ulong iterations = 0;
             do
             {
-                if (z.Magnitude > 0)
+                if (Complex.Abs(z) > 0)
                 {
-                    z -= (z * z * z - 1.0) / (z * z * 3.0);
+                    z -= (Complex.Pow(z, 3) - 1.0) / (Complex.Pow(z, 2) * 3.0);
                 }
                 iterations++;
-
-                _calculationArray[x, y].AbsZR1 = Complex.Abs(z - _r1);
-                _calculationArray[x, y].AbsZR2 = Complex.Abs(z - _r2);
-                _calculationArray[x, y].AbsZR3 = Complex.Abs(z - _r3);
-
             }
-            while (
-                iterations < Configuration.MaxIterations &&
-                _calculationArray[x, y].AbsZR1 >= _tol &&
-                _calculationArray[x, y].AbsZR2 >= _tol &&
-                _calculationArray[x, y].AbsZR2 >= _tol
-            );
+            while (iterations < Configuration.MaxIterations &&
+                   Complex.Abs(z - _r1) >= TOL &&
+                   Complex.Abs(z - _r2) >= TOL &&
+                   Complex.Abs(z - _r3) >= TOL);
+
+            _calculationArray[x, y].AbsZR1 = Complex.Abs(z - _r1);
+            _calculationArray[x, y].AbsZR2 = Complex.Abs(z - _r2);
+            _calculationArray[x, y].AbsZR3 = Complex.Abs(z - _r3);
 
             CollectCommonCalculations(x, y, iterations, z);
         }
 
         /// <summary>
         /// Returns the color for the desired pixel.
-        /// For the Newton fractal, the index of the color in the palette is obtained with:
-        /// ColorIndex = Iterations * ColorBitDepth / LargestIteration
-        /// But depending on the value of AbsZR1 compared to Tol, we invert one of the 3 RGB colors.
         /// </summary>
         /// <param name="x">The horizontal position of the pixel.</param>
         /// <param name="y">The vertical position of the pixel.</param>
         /// <returns>A Color instance representing the RGB color of the pixel.</returns>
         protected override Color GetColorForPixel(int x, int y)
         {
-            Color color;
+            int r = 0;
+            int g = 0;
+            int b = 0;
 
-            int colorIndex = (int)(_calculationArray[x, y].Iterations * _colorBitDepth / _largestIteration);
-
-            if (_calculationArray[x, y].AbsZR1 < _tol)
+            if (_calculationArray[x, y].AbsZR1 < TOL)
             {
-                color = Color.FromArgb(_colorBitDepth - colorIndex, 0, 0);
+                r = 255 - (int)_calculationArray[x, y].Iterations * 15;
             }
-            else if (_calculationArray[x, y].AbsZR2 <= _tol)
+            if (_calculationArray[x, y].AbsZR2 <= TOL)
             {
-                color = Color.FromArgb(0, _colorBitDepth - colorIndex, 0);
+                g = 255 - (int)_calculationArray[x, y].Iterations * 15;
             }
-            else if (_calculationArray[x, y].AbsZR3 <= _tol)
+            if (_calculationArray[x, y].AbsZR3 <= TOL)
             {
-                color = Color.FromArgb(0, 0, _colorBitDepth - colorIndex);
-            }
-            else
-            {
-                color = Color.Black;
+                b = 255 - (int)_calculationArray[x, y].Iterations * 15;
             }
 
-            return color;
+            return Color.FromArgb(
+                r >= 0 ? r : 0,
+                g >= 0 ? g : 0,
+                b >= 0 ? b : 0);
         }
     }
 }

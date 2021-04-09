@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FractalGenerator
 {
@@ -66,6 +67,7 @@ namespace FractalGenerator
             }
         }
 
+        [DoesNotReturn]
         public static void ExceptionAndExit(Exception e)
         {
             string s = string.Empty;
@@ -89,6 +91,7 @@ namespace FractalGenerator
             Goodbye();
         }
 
+        [DoesNotReturn]
         public static void ErrorHelpAndExit(string error)
         {
             Error(error);
@@ -96,6 +99,7 @@ namespace FractalGenerator
             HelpAndExit();
         }
 
+        [DoesNotReturn]
         public static void HelpAndExit()
         {
             Help();
@@ -128,6 +132,7 @@ namespace FractalGenerator
 ");
         }
 
+        [DoesNotReturn]
         private static void Goodbye()
         {
             Line();

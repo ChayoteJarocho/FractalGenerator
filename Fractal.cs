@@ -9,24 +9,21 @@ namespace FractalGenerator
 {
     public abstract class Fractal
     {
-        protected readonly int _colorBitDepth = 255;
+        protected const int ColorBitDepth = 255;
 
         private bool _isCalculated;
-        private FastBitmap _bitmap;
-        private object _lockCalculation;
+        private readonly FastBitmap _bitmap;
         protected Calculation[,] _calculationArray;
-        protected long _largestIteration;
+        protected ulong _largestIteration;
         protected double _largestIterationLog;
 
         public Fractal()
         {
-            Log.Info($"Generating a '{Configuration.FractalVariation.ToString()}' fractal...");
+            Log.Info($"Generating a '{Configuration.FractalVariation}' fractal...");
 
             _isCalculated = false;
             _bitmap = new FastBitmap();
             _calculationArray = new Calculation[Configuration.Width, Configuration.Height];
-            _lockCalculation = new object();
-
             _largestIteration = 1;
         }
 
@@ -36,18 +33,20 @@ namespace FractalGenerator
             Paint();
         }
 
-        public void Open()
+        public static void Open()
         {
             if (File.Exists(Configuration.OutputFilePath))
             {
                 Log.Info($"Opening: {Configuration.OutputFilePath}");
 
-                Process p = new Process();
-                p.StartInfo = new ProcessStartInfo(Configuration.OutputFilePath)
+                var process = new Process
                 {
-                    UseShellExecute = true
+                    StartInfo = new ProcessStartInfo(Configuration.OutputFilePath)
+                    {
+                        UseShellExecute = true
+                    }
                 };
-                p.Start();
+                process.Start();
             }
         }
 
@@ -80,7 +79,7 @@ namespace FractalGenerator
                 throw new InvalidOperationException("Must call Calculate before calling Paint!");
             }
 
-            Log.Info(false, "Painting fractal: ");
+            Log.Info("Painting fractal: ");
 
             _bitmap.Lock();
             
@@ -124,6 +123,8 @@ namespace FractalGenerator
                 }
             }
 
+            FindLargestIteration();
+
             // Indicate the column was finished
             Console.Write(".");
         }
@@ -151,39 +152,37 @@ namespace FractalGenerator
             Console.Write(".");
         }
 
-        protected void CollectCommonCalculations(int x, int y, int iterations, Complex z)
+        private void FindLargestIteration()
         {
-            _calculationArray[x, y].LastZ = z;
-            _calculationArray[x, y].Iterations = iterations;
-
-            lock (_lockCalculation)
+            for (int y = 0; y < Configuration.Height; y++)
             {
-                if (iterations > _largestIteration)
+                for (int x = 0; x < Configuration.Width; x++)
                 {
-                    _largestIteration = iterations;
+                    if (_calculationArray[x,y].Iterations > _largestIteration)
+                    {
+                        _largestIteration = _calculationArray[x, y].Iterations;
+                    }
                 }
             }
         }
 
-        protected double ConvertPixelToHorizontal(int x)
+        protected void CollectCommonCalculations(int x, int y, ulong iterations, Complex z)
         {
-            return (x * Configuration.PlaneWidth / (Configuration.Width)) + Configuration.XMin;
+            _calculationArray[x, y].LastZ = z;
+            _calculationArray[x, y].Iterations = iterations;
         }
 
-        protected double ConvertPixelToVertical(int y)
-        {
-            return (y * Configuration.PlaneHeight / (Configuration.Height)) + Configuration.YMin;
-        }
+        protected static double ConvertPixelToHorizontal(int x) =>
+            (x * Configuration.PlaneWidth / (Configuration.Width)) + Configuration.XMin;
 
-        protected int ConvertHorizontalToPixel(double h)
-        {
-            return (int)((h - Configuration.XMin) * Configuration.Width / Configuration.PlaneWidth);
-        }
+        protected static double ConvertPixelToVertical(int y) =>
+            (y * Configuration.PlaneHeight / (Configuration.Height)) + Configuration.YMin;
 
-        protected int ConvertVerticalToPixel(double v)
-        {
-            return (int)((v - Configuration.YMin) * Configuration.Height / Configuration.PlaneHeight);
-        }
+        protected static int ConvertHorizontalToPixel(double h) =>
+            (int)((h - Configuration.XMin) * Configuration.Width / Configuration.PlaneWidth);
+
+        protected static int ConvertVerticalToPixel(double v) =>
+            (int)((v - Configuration.YMin) * Configuration.Height / Configuration.PlaneHeight);
 
         protected abstract void Calculate(int x, int y, double h, double v);
 

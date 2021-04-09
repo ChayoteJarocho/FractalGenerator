@@ -21,10 +21,9 @@ namespace FractalGenerator
         /// <param name="v">The vertical point in the complex plane.</param>
         protected override void Calculate(int x, int y, double h, double v)
         {
-            Complex z = new Complex(h, v);
-            Complex c = new Complex(Configuration.CReal, Configuration.CImaginary);
-
-            int iterations = 0;
+            var z = new Complex(h, v);
+            var c = new Complex(Configuration.CReal, Configuration.CImaginary);
+            ulong iterations = 0;
             do
             {
                 z = z * z + c;
@@ -37,8 +36,6 @@ namespace FractalGenerator
 
         /// <summary>
         /// Returns the color for the desired pixel.
-        /// For the Julia fractal, the index of the color in the palette is obtained with:
-        /// ColorIndex = Iterations * ColorBitDepth / LargestIteration
         /// </summary>
         /// <param name="x">The horizontal position of the pixel.</param>
         /// <param name="y">The vertical position of the pixel.</param>
@@ -46,14 +43,14 @@ namespace FractalGenerator
         protected override Color GetColorForPixel(int x, int y)
         {
             int colorIndex;
-
             if (double.IsInfinity(_calculationArray[x, y].Iterations))
             {
                 colorIndex = 0;
             }
             else
             {
-                colorIndex = (int)(_calculationArray[x, y].Iterations * _colorBitDepth / Configuration.MaxIterations);
+                double it = _calculationArray[x, y].Iterations;
+                colorIndex = (int)(ColorBitDepth * Math.Pow(it / Configuration.MaxIterations, it / Configuration.MaxIterations));
             }
 
             return Configuration.ArrayPalette[colorIndex];

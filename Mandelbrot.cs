@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Numerics;
 
-
 namespace FractalGenerator
 {
     public class Mandelbrot : Fractal
@@ -22,11 +21,9 @@ namespace FractalGenerator
         /// <param name="v">The vertical point in the complex plane.</param>
         protected override void Calculate(int x, int y, double h, double v)
         {
-            Complex z = new Complex(0.0, 0.0);
-            Complex c = new Complex(h, v);
-
-            int iterations = 0;
-
+            var z = new Complex(0.0, 0.0);
+            var c = new Complex(h, v);
+            ulong iterations = 0;
             do
             {
                 z = z * z + c;
@@ -34,15 +31,11 @@ namespace FractalGenerator
             }
             while (z.Magnitude < Configuration.Radius && iterations < Configuration.MaxIterations);
 
-            _calculationArray[x, y].Iterations = iterations; 
-
             CollectCommonCalculations(x, y, iterations, z);
         }
 
         /// <summary>
         /// Returns the color for the desired pixel.
-        /// For the Mandelbrot fractal, the index of the color in the palette is obtained with:
-        /// ColorIndex = (FractionalEscape == Infinity || LargestFractionalEscape == Infinity) ? 0 : FractionalEscape * ColorBitDepth / LargestFractionalEscape
         /// </summary>
         /// <param name="x">The horizontal position of the pixel.</param>
         /// <param name="y">The vertical position of the pixel.</param>
@@ -57,7 +50,7 @@ namespace FractalGenerator
             else
             {
                 double it = _calculationArray[x, y].Iterations;
-                colorIndex = (int)(_colorBitDepth * Math.Pow(it/Configuration.MaxIterations, it/Configuration.MaxIterations));
+                colorIndex = (int)(ColorBitDepth * Math.Pow(it/Configuration.MaxIterations, it/Configuration.MaxIterations));
             }
 
             return Configuration.ArrayPalette[colorIndex];

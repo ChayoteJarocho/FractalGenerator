@@ -1,14 +1,10 @@
-﻿#region Using directives
-
-using System.Numerics;
-
-#endregion
+﻿using System.Numerics;
 
 namespace FractalGenerator
 {
     public struct Calculation
     {
-        public double Iterations;
+        public ulong Iterations;
         public Complex LastZ;
 
         // Used only for Newton

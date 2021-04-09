@@ -2,7 +2,7 @@
   "profiles": {
     "FractalGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "-f  Mandelbrot -w 160 -h 100 -i 100 -r 10000 -a false"
+      "commandLineArgs": "-fractal  Mandelbrot -width 160 -height 100 -iterations 100 -radius 10000 -async false"
     }
   }
 }
