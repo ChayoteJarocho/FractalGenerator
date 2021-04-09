@@ -36,8 +36,6 @@ namespace FractalGenerator
 
         /// <summary>
         /// Returns the color for the desired pixel.
-        /// For the Mandelbrot fractal, the index of the color in the palette is obtained with:
-        /// ColorIndex = (FractionalEscape == Infinity || LargestFractionalEscape == Infinity) ? 0 : FractionalEscape * ColorBitDepth / LargestFractionalEscape
         /// </summary>
         /// <param name="x">The horizontal position of the pixel.</param>
         /// <param name="y">The vertical position of the pixel.</param>
