@@ -9,9 +9,9 @@ public class Newton : Fractal
 {
     private const float TOL = .0001f;
 
-    private Complex _r1;
-    private Complex _r2;
-    private Complex _r3;
+    private readonly Complex _r1;
+    private readonly Complex _r2;
+    private readonly Complex _r3;
 
     public Newton() : base()
     {
