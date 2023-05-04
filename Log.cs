@@ -1,114 +1,84 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace FractalGenerator
+namespace FractalGenerator;
+
+public class Log
 {
-    public class Log
+    public static void Line() => Console.WriteLine();
+
+    public static void Info(string format, params object[] args) => Info(true, format, args);
+
+    public static void Info(bool endline, string format, params object[] args) => Print(endline, ConsoleColor.White, format, args);
+
+    public static void Success(string format, params object[] args) => Success(true, format, args);
+
+    public static void Success(bool endline, string format, params object[] args) => Print(endline, ConsoleColor.Green, format, args);
+
+    public static void Warning(string format, params object[] args) => Warning(true, format, args);
+
+    public static void Warning(bool endline, string format, params object[] args) => Print(endline, ConsoleColor.Yellow, format, args);
+
+    public static void Error(string format, params object[] args) => Error(true, format, args);
+
+    public static void Error(bool endline, string format, params object[] args) => Print(endline, ConsoleColor.Red, format, args);
+
+    public static void Assert(bool condition, string format, params object[] args) => Assert(true, condition, format, args);
+
+    public static void Assert(bool endline, bool condition, string format, params object[] args)
     {
-        public static void Line()
+        if (condition)
         {
-            Console.WriteLine();
+            Success(endline, format, args);
         }
-
-        public static void Info(string format, params object[] args)
+        else
         {
-            Info(true, format, args);
+            Error(endline, format, args);
         }
+    }
 
-        public static void Info(bool endline, string format, params object[] args)
+    [DoesNotReturn]
+    public static void ExceptionAndExit(Exception e)
+    {
+        string s = string.Empty;
+
+        s += "\r\n";
+        s += $"  Exception message:";
+        s += $"    {e.Message}\r\n";
+        s += $"    {e.StackTrace}\r\n";
+
+        if (e.InnerException != null)
         {
-            Print(endline, ConsoleColor.White, format, args);
-        }
-
-        public static void Success(string format, params object[] args)
-        {
-            Success(true, format, args);
-        }
-
-        public static void Success(bool endline, string format, params object[] args)
-        {
-            Print(endline, ConsoleColor.Green, format, args);
-        }
-
-        public static void Warning(string format, params object[] args)
-        {
-            Warning(true, format, args);
-        }
-
-        public static void Warning(bool endline, string format, params object[] args)
-        {
-            Print(endline, ConsoleColor.Yellow, format, args);
-        }
-
-        public static void Error(string format, params object[] args)
-        {
-            Error(true, format, args);
-        }
-
-        public static void Error(bool endline, string format, params object[] args)
-        {
-            Print(endline, ConsoleColor.Red, format, args);
-        }
-
-        public static void Assert(bool condition, string format, params object[] args)
-        {
-            Assert(true, condition, format, args);
-        }
-
-        public static void Assert(bool endline, bool condition, string format, params object[] args)
-        {
-            if (condition)
-            {
-                Success(endline, format, args);
-            }
-            else
-            {
-                Error(endline, format, args);
-            }
-        }
-
-        [DoesNotReturn]
-        public static void ExceptionAndExit(Exception e)
-        {
-            string s = string.Empty;
-
             s += "\r\n";
-            s += $"  Exception message:";
-            s += $"    {e.Message}\r\n";
-            s += $"    {e.StackTrace}\r\n";
-
-            if (e.InnerException != null)
-            {
-                s += "\r\n";
-                s += "  Inner exception:\r\n";
-                s += $"    {e.InnerException.Message}\r\n";
-                s += $"    {e.InnerException.StackTrace}\r\n";
-            }
-
-            s += "\r\n";
-
-            Error(s);
-            Goodbye();
+            s += "  Inner exception:\r\n";
+            s += $"    {e.InnerException.Message}\r\n";
+            s += $"    {e.InnerException.StackTrace}\r\n";
         }
 
-        [DoesNotReturn]
-        public static void ErrorHelpAndExit(string error)
-        {
-            Error(error);
-            Line();
-            HelpAndExit();
-        }
+        s += "\r\n";
 
-        [DoesNotReturn]
-        public static void HelpAndExit()
-        {
-            Help();
-            Goodbye();
-        }
+        Error(s);
+        Goodbye();
+    }
 
-        private static void Help()
-        {
-            Warning($@"Usage:
+    [DoesNotReturn]
+    public static void ErrorHelpAndExit(string error)
+    {
+        Error(error);
+        Line();
+        HelpAndExit();
+    }
+
+    [DoesNotReturn]
+    public static void HelpAndExit()
+    {
+        Help();
+        Goodbye();
+    }
+
+    private static void Help()
+    {
+        Warning($@"Usage:
 [-ASYNC][-CIMAG][-CREAL][-DEPTH][-FRACTAL][-H | HELP][-HEIGHT][-ITERATIONS][-LIGHT][-MIX][-OUTPUT][-PALETTE][-RADIUS][-WIDTH][-XCENTER][-YCENTER][-ZOOM]
 
 -H | HELP         : Show this help message.
@@ -130,31 +100,29 @@ namespace FractalGenerator
 -YCENTER <double> : The y coordinate of the point to zoom in the plane. Default: {Configuration.YCenter}.
 -ZOOM <double>    : The amount of zoom on the image. The default is {Configuration.Zoom}.
 ");
-        }
+    }
 
-        [DoesNotReturn]
-        private static void Goodbye()
+    [DoesNotReturn]
+    private static void Goodbye()
+    {
+        Line();
+        Error("Goodbye!");
+        Line();
+        Environment.Exit(0);
+    }
+
+    private static void Print(bool endline, ConsoleColor foregroundColor, string format, params object[] args)
+    {
+        ConsoleColor initialColor = Console.ForegroundColor;
+        Console.ForegroundColor = foregroundColor;
+        if (endline)
         {
-            Line();
-            Error("Goodbye!");
-            Line();
-            Environment.Exit(0);
+            Console.WriteLine(format, args);
         }
-
-        private static void Print(bool endline, ConsoleColor foregroundColor, string format, params object[] args)
+        else
         {
-            ConsoleColor initialColor = Console.ForegroundColor;
-            Console.ForegroundColor = foregroundColor;
-            if (endline)
-            {
-                Console.WriteLine(format, args);
-            }
-            else
-            {
-                Console.Write(format, args);
-            }
-            Console.ForegroundColor = initialColor;
+            Console.Write(format, args);
         }
-
+        Console.ForegroundColor = initialColor;
     }
 }

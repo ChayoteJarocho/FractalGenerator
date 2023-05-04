@@ -1,0 +1,63 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
+        },
+        {
+            "name": "Debug Mandelbrot",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/net7.0/FractalGenerator.dll",
+            "args": [
+                "-fractal", "Mandelbrot",
+                "-width", "640",
+                "-height", "480",
+                "-iterations", "1500",
+                "-radius", "100000",
+                "-palette", "summer.txt"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Debug Julia",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/net7.0/FractalGenerator.dll",
+            "args": [
+                "-fractal", "Julia",
+                "-width", "640",
+                "-height", "480",
+                "-iterations", "100",
+                "-radius", "10000",
+                "-palette", "copper.txt"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Debug Newton",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/net7.0/FractalGenerator.dll",
+            "args": [
+                "-fractal", "Newton",
+                "-width", "640",
+                "-height", "480",
+                "-iterations", "100",
+                "-palette", "spring.txt"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}

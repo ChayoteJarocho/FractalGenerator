@@ -1,10 +1,9 @@
-namespace FractalGenerator
+namespace FractalGenerator;
+
+public enum Depths
 {
-    public enum Depths
-    {
-        Unspecified = -1,
-        Bits8 = 8,
-        Bits24 = 24,
-        Bits32 = 32
-    }
+    Unspecified = -1,
+    Bits8 = 8,
+    Bits24 = 24,
+    Bits32 = 32
 }

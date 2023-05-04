@@ -16,7 +16,7 @@ Usage:
 -HEIGHT <int>     : Height of the image, in pixels. Must be a positive integer number. Default: 200
 -ITERATIONS <int> : Iterations inside the algorithm. Must be a positive integer number. The bigger the number, the higher the contrast. Default: 256
 -LIGHT <double>   : Light management (contrast). Must be a double number between 0.0 and 1.0. Default: 0
--OUTPUT <string>  : Output file. Must not have spaces, unless it is between quotation marks. Extension must be bmp. Default: output.bmp    
+-OUTPUT <string>  : Output file. Must not have spaces, unless it is between quotation marks. Extension must be bmp. Default: output.bmp
 -PALETTE <string> : Mathlab base color palette file. Must ve a valid Mathlab palette, and must exist inside the palettes directory. Default:  hsv.txt
 -MIX <string>     : Optional extra Mathlab color palette that will be mixed with the base palette file. Must ve a valid Mathlab palette, and must exist inside the palettes directory. Default is empty.
 -RADIUS <double>  : Escaping radius limit. Must be a positive double number. If fractal is Newton, must be a float number < 1.0. Default: 1E+20
@@ -34,7 +34,7 @@ Examples:
 FractalGenerator -fractal Mandelbrot -width 640 -height 480 -iterations 1500 -radius 100000
 ```
 
-![Mandelbrot](mandelbrot.bmp)
+![Mandelbrot](img/mandelbrot.bmp)
 
 ### Julia
 
@@ -42,7 +42,7 @@ FractalGenerator -fractal Mandelbrot -width 640 -height 480 -iterations 1500 -ra
 FractalGenerator -fractal Julia -width 640 -height 480 -iterations 100 -radius 10000 -palette copper.txt
 ```
 
-![Julia](julia.bmp)
+![Julia](img/julia.bmp)
 
 ### Newton
 
@@ -50,4 +50,4 @@ FractalGenerator -fractal Julia -width 640 -height 480 -iterations 100 -radius 1
 FractalGenerator -fractal Newton -width 640 -height 480 -iterations 2000
 ```
 
-![Newton](newton.bmp)
+![Newton](img/newton.bmp)
