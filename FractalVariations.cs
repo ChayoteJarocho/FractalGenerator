@@ -1,11 +1,10 @@
-﻿namespace FractalGenerator
+﻿namespace FractalGenerator;
+
+public enum FractalVariations
 {
-    public enum FractalVariations
-    {
-        Unspecified,
-        Julia,
-        Mandelbrot,
-        Newton,
-        Spiderweb
-    }
+    Unspecified,
+    Julia,
+    Mandelbrot,
+    Newton,
+    Spiderweb
 }

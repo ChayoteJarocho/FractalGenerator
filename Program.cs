@@ -15,13 +15,13 @@
 
     - Mandelbrot set, programming, coloring and smoothing
     http://en.wikipedia.org/wiki/Mandelbrot_set
-    
+
     - Smooth shading for the Mandelbrot exterior
     http://linas.org/art-gallery/escape/smooth.html
-    
+
     - Coloring the Mandelbrot set
     http://yozh.org/mset_index/
-    
+
     - Mandelbulb (3D Mandelbrot)
     http://www.skytopia.com/project/fractal/mandelbulb.html
 
@@ -36,36 +36,35 @@
     everything:                     minvalue=0, maxvalue=11*colors_palette
 */
 
-namespace FractalGenerator
+namespace FractalGenerator;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        Log.Success("-------------------------");
+        Log.Success("--- FRACTAL GENERATOR ---");
+        Log.Success("-------------------------");
+
+        try
         {
-            Log.Success("-------------------------");
-            Log.Success("--- FRACTAL GENERATOR ---");
-            Log.Success("-------------------------");
+            Configuration.Verify(args);
 
-            try
+            Fractal fractal = Configuration.FractalVariation switch
             {
-                Configuration.Verify(args);
+                FractalVariations.Julia =>      new Julia(),
+                FractalVariations.Mandelbrot => new Mandelbrot(),
+                FractalVariations.Newton =>     new Newton(),
+                FractalVariations.Spiderweb =>  new Spiderweb(),
+                _ => throw new ArgumentException($"Unknown fractal variation: {Configuration.FractalVariation}"),
+            };
 
-                Fractal fractal = Configuration.FractalVariation switch
-                {
-                    FractalVariations.Julia =>      new Julia(),
-                    FractalVariations.Mandelbrot => new Mandelbrot(),
-                    FractalVariations.Newton =>     new Newton(),
-                    FractalVariations.Spiderweb =>  new Spiderweb(),
-                    _ => throw new ArgumentException($"Unknown fractal variation: {Configuration.FractalVariation}"),
-                };
-
-                fractal.Generate();
-                Fractal.Open();
-            }
-            catch(Exception e)
-            {
-                Log.ExceptionAndExit(e);
-            }
+            fractal.Generate();
+            Fractal.Open();
+        }
+        catch(Exception e)
+        {
+            Log.ExceptionAndExit(e);
         }
     }
 }
