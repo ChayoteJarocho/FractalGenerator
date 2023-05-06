@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SixLabors.ImageSharp;
+using System;
 using System.Runtime.InteropServices;
 
 namespace FractalGenerator;
@@ -83,17 +84,17 @@ public class FastBitmap
                 g = _pixels[i + 1];
                 r = _pixels[i + 2];
                 a = _pixels[i + 3];
-                color = Color.FromArgb(a, r, g, b);
+                color = Color.FromRgba(a, r, g, b);
                 break;
             case 24:
                 b = _pixels[i];
                 g = _pixels[i + 1];
                 r = _pixels[i + 2];
-                color = Color.FromArgb(r, g, b);
+                color = Color.FromRgb(r, g, b);
                 break;
             case 8:
                 byte c = _pixels[i];
-                color = Color.FromArgb(c, c, c);
+                color = Color.FromRgb(c, c, c);
                 break;
             default:
                 throw new ArgumentException($"Unknown depth: {Configuration.Depth}");

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SixLabors.ImageSharp;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -370,11 +371,11 @@ public static class Configuration
                         float gColorRaw = float.Parse(match.Groups["gColor"].Value);
                         float bColorRaw = float.Parse(match.Groups["bColor"].Value);
 
-                        int rColor = (int)(rColorRaw * 255);
-                        int gColor = (int)(gColorRaw * 255);
-                        int bColor = (int)(bColorRaw * 255);
+                        byte rColor = (byte)(rColorRaw * 255);
+                        byte gColor = (byte)(gColorRaw * 255);
+                        byte bColor = (byte)(bColorRaw * 255);
 
-                        palette[i] = Color.FromArgb(rColor, gColor, bColor);
+                        palette[i] = Color.FromRgb(rColor, gColor, bColor);
                     }
                 }
 
