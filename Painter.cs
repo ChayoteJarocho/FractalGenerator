@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace FractalGenerator;
 
-public class FastBitmap
+public class Painter
 {
     private readonly Bitmap _bitmap;
     private Rectangle _rectangle;
@@ -16,7 +16,7 @@ public class FastBitmap
     private readonly int _colorCount;
     private readonly byte[] _pixels;
 
-    public FastBitmap()
+    public Painter()
     {
         _pixelFormat = Configuration.Depth switch
         {

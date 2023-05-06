@@ -11,7 +11,7 @@ public abstract class Fractal
     protected const int ColorBitDepth = 255;
 
     private bool _isCalculated;
-    private readonly FastBitmap _bitmap;
+    private readonly Painter _painter;
     protected Calculation[,] _calculationArray;
     protected ulong _largestIteration;
     protected double _largestIterationLog;
@@ -21,7 +21,7 @@ public abstract class Fractal
         Log.Info($"Generating a '{Configuration.FractalVariation}' fractal...");
 
         _isCalculated = false;
-        _bitmap = new FastBitmap();
+        _painter = new Painter();
         _calculationArray = new Calculation[Configuration.Width, Configuration.Height];
         _largestIteration = 1;
     }
@@ -34,19 +34,21 @@ public abstract class Fractal
 
     public static void Open()
     {
-        if (File.Exists(Configuration.OutputFilePath))
+        if (!File.Exists(Configuration.OutputFilePath))
         {
-            Log.Info($"Opening: {Configuration.OutputFilePath}");
-
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo(Configuration.OutputFilePath)
-                {
-                    UseShellExecute = true
-                }
-            };
-            process.Start();
+            throw new FileNotFoundException($"File does not exist: {Configuration.OutputFilePath}");
         }
+
+        Log.Info($"Opening: {Configuration.OutputFilePath}");
+
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo(Configuration.OutputFilePath)
+            {
+                UseShellExecute = true
+            }
+        };
+        process.Start();
     }
 
     private void Calculate()
@@ -73,15 +75,15 @@ public abstract class Fractal
 
         Log.Info("Painting fractal: ");
 
-        _bitmap.Lock();
+        _painter.Lock();
 
         for (int x = 0; x < Configuration.Width; x++)
         {
             PaintCallback(x);
         }
 
-        _bitmap.Unlock();
-        _bitmap.Save();
+        _painter.Unlock();
+        _painter.Save();
 
         Log.Line();
         Log.Success("Painting finished!");
@@ -108,7 +110,7 @@ public abstract class Fractal
         for (int y = 0; y < Configuration.Height; y++)
         {
             Color color = GetColorForPixel(x, y);
-            _bitmap.SetPixel(x, y, color);
+            _painter.SetPixel(x, y, color);
         }
         
         // One dot = one line
