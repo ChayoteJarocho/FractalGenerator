@@ -46,6 +46,8 @@ public class Program
         Log.Success("--- FRACTAL GENERATOR ---");
         Log.Success("-------------------------");
 
+
+
         try
         {
             Configuration.Verify(args);
