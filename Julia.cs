@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SixLabors.ImageSharp;
+using System;
 using System.Numerics;
 
 namespace FractalGenerator;
