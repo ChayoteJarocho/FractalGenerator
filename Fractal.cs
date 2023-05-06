@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Numerics;
-using System.Threading.Tasks;
 
 namespace FractalGenerator;
 
@@ -54,16 +53,9 @@ public abstract class Fractal
     {
         Log.Info("Calculating fractal: ");
 
-        if (Configuration.Async)
+        for (int x = 0; x < Configuration.Width; x++)
         {
-            Parallel.For(0, Configuration.Width, CalculateCallback);
-        }
-        else
-        {
-            for (int x = 0; x < Configuration.Width; x++)
-            {
-                CalculateCallback(x);
-            }
+            CalculateCallback(x);
         }
 
         Log.Line();
@@ -83,16 +75,9 @@ public abstract class Fractal
 
         _bitmap.Lock();
 
-        if (Configuration.Async)
+        for (int x = 0; x < Configuration.Width; x++)
         {
-            Parallel.For(0, Configuration.Width, PaintCallback);
-        }
-        else
-        {
-            for (int x = 0; x < Configuration.Width; x++)
-            {
-                PaintCallback(x);
-            }
+            PaintCallback(x);
         }
 
         _bitmap.Unlock();
@@ -106,21 +91,10 @@ public abstract class Fractal
     {
         double h = ConvertPixelToHorizontal(x);
 
-        if (Configuration.Async)
+        for (int y = 0; y < Configuration.Height; y++)
         {
-            Parallel.For(0, Configuration.Height, y =>
-            {
-                double v = ConvertPixelToVertical(y);
-                Calculate(x, y, h, v);
-            });
-        }
-        else
-        {
-            for (int y = 0; y < Configuration.Height; y++)
-            {
-                double v = ConvertPixelToVertical(y);
-                Calculate(x, y, h, v);
-            }
+            double v = ConvertPixelToVertical(y);
+            Calculate(x, y, h, v);
         }
 
         FindLargestIteration();
@@ -131,23 +105,12 @@ public abstract class Fractal
 
     private void PaintCallback(int x)
     {
-        if (Configuration.Async)
+        for (int y = 0; y < Configuration.Height; y++)
         {
-            Parallel.For(0, Configuration.Height, y =>
-            {
-                Color color = GetColorForPixel(x, y);
-                _bitmap.SetPixel(x, y, color);
-            });
+            Color color = GetColorForPixel(x, y);
+            _bitmap.SetPixel(x, y, color);
         }
-        else
-        {
-            for (int y = 0; y < Configuration.Height; y++)
-            {
-                Color color = GetColorForPixel(x, y);
-                _bitmap.SetPixel(x, y, color);
-            }
-        }
-
+        
         // One dot = one line
         Console.Write(".");
     }

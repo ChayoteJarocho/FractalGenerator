@@ -57,7 +57,6 @@ public static class Configuration
     public static double PlaneHeight => Math.Abs(YMax) + Math.Abs(YMin);
     public static double PlaneWidth => Math.Abs(XMax) + Math.Abs(XMin);
 
-    public static bool Async { get; private set; } = true;
     public static string OutputFilePath => Path.Combine(Directory.GetCurrentDirectory(), OutputFileName);
     public static double CImaginary { get; private set; } = 0.75;
     public static double CReal { get; private set; } = -0.2;
@@ -104,10 +103,6 @@ public static class Configuration
                     {
                         switch (arg.ToUpperInvariant())
                         {
-                            case "-ASYNC":
-                                option = ArgumentOption.Async;
-                                break;
-
                             case "-CIMAG":
                                 option = ArgumentOption.CImaginary;
                                 break;
@@ -177,14 +172,6 @@ public static class Configuration
                                 throw new ArgumentException($"Unrecognized option: {arg}");
                         }
 
-                        break;
-                    }
-
-                case ArgumentOption.Async:
-                    {
-                        TryParseBool("Async", arg, out bool b);
-                        Async = b;
-                        option = ArgumentOption.Initial;
                         break;
                     }
 
@@ -431,7 +418,6 @@ public static class Configuration
     }
     private static void PrintArgumentFinalSelections()
     {
-        Log.Info($"    Async:              {Async}");
         Log.Info($"    C (Real, Imag):     {CReal}, {CImaginary}");
         Log.Info($"    Center (X, Y):      {XCenter}, {YCenter}");
         Log.Info($"    Color Depth:        {Depth}");
