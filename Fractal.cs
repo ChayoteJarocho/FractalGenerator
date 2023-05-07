@@ -1,169 +1,87 @@
-﻿using System;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Numerics;
-using System.Threading.Tasks;
 
 namespace FractalGenerator;
 
 public abstract class Fractal
 {
     protected const int ColorBitDepth = 255;
-
-    private bool _isCalculated;
-    private readonly FastBitmap _bitmap;
+    private readonly Image<Rgb24> _image;
     protected Calculation[,] _calculationArray;
-    protected ulong _largestIteration;
-    protected double _largestIterationLog;
 
     public Fractal()
     {
         Log.Info($"Generating a '{Configuration.FractalVariation}' fractal...");
 
-        _isCalculated = false;
-        _bitmap = new FastBitmap();
+        _image = new Image<Rgb24>(Configuration.Width, Configuration.Height);
         _calculationArray = new Calculation[Configuration.Width, Configuration.Height];
-        _largestIteration = 1;
     }
 
     public void Generate()
     {
         Calculate();
-        Paint();
+        Save();
     }
 
-    public static void Open()
+    public void Open()
     {
-        if (File.Exists(Configuration.OutputFilePath))
+        if (!File.Exists(Configuration.OutputFilePath))
         {
-            Log.Info($"Opening: {Configuration.OutputFilePath}");
-
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo(Configuration.OutputFilePath)
-                {
-                    UseShellExecute = true
-                }
-            };
-            process.Start();
+            throw new FileNotFoundException($"File does not exist: {Configuration.OutputFilePath}");
         }
+
+        Log.Info($"Opening: {Configuration.OutputFilePath}");
+
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo(Configuration.OutputFilePath)
+            {
+                UseShellExecute = true
+            }
+        };
+        process.Start();
+    }
+
+    private void Save()
+    {
+        Log.Info("Saving file...");
+        _image.Save(Configuration.OutputFileName);
+        _image.Dispose();
     }
 
     private void Calculate()
     {
         Log.Info("Calculating fractal: ");
 
-        if (Configuration.Async)
+        _image.ProcessPixelRows(accessor =>
         {
-            Parallel.For(0, Configuration.Width, CalculateCallback);
-        }
-        else
-        {
-            for (int x = 0; x < Configuration.Width; x++)
+            for (int y = 0; y < accessor.Height; y++)
             {
-                CalculateCallback(x);
+                double v = ConvertPixelToVertical(y);
+                Span<Rgb24> pixelRow = accessor.GetRowSpan(y);
+                CalculateRow(y, v, pixelRow);
             }
-        }
-
+        });
         Log.Line();
         Log.Success("Calculation finished!");
-
-        _isCalculated = true;
     }
 
-    private void Paint()
+    private void CalculateRow(int y, double v, Span<Rgb24> pixelRow)
     {
-        if (!_isCalculated)
+        for (int x = 0; x < pixelRow.Length; x++)
         {
-            throw new InvalidOperationException("Must call Calculate before calling Paint!");
+            double h = ConvertPixelToHorizontal(x);
+            Calculate(x, y, h, v);
+            pixelRow[x] = GetColorForPixel(x, y).ToPixel<Rgb24>();
+            
         }
-
-        Log.Info("Painting fractal: ");
-
-        _bitmap.Lock();
-
-        if (Configuration.Async)
-        {
-            Parallel.For(0, Configuration.Width, PaintCallback);
-        }
-        else
-        {
-            for (int x = 0; x < Configuration.Width; x++)
-            {
-                PaintCallback(x);
-            }
-        }
-
-        _bitmap.Unlock();
-        _bitmap.Save();
-
-        Log.Line();
-        Log.Success("Painting finished!");
-    }
-
-    private void CalculateCallback(int x)
-    {
-        double h = ConvertPixelToHorizontal(x);
-
-        if (Configuration.Async)
-        {
-            Parallel.For(0, Configuration.Height, y =>
-            {
-                double v = ConvertPixelToVertical(y);
-                Calculate(x, y, h, v);
-            });
-        }
-        else
-        {
-            for (int y = 0; y < Configuration.Height; y++)
-            {
-                double v = ConvertPixelToVertical(y);
-                Calculate(x, y, h, v);
-            }
-        }
-
-        FindLargestIteration();
 
         // Indicate the column was finished
         Console.Write(".");
-    }
-
-    private void PaintCallback(int x)
-    {
-        if (Configuration.Async)
-        {
-            Parallel.For(0, Configuration.Height, y =>
-            {
-                Color color = GetColorForPixel(x, y);
-                _bitmap.SetPixel(x, y, color);
-            });
-        }
-        else
-        {
-            for (int y = 0; y < Configuration.Height; y++)
-            {
-                Color color = GetColorForPixel(x, y);
-                _bitmap.SetPixel(x, y, color);
-            }
-        }
-
-        // One dot = one line
-        Console.Write(".");
-    }
-
-    private void FindLargestIteration()
-    {
-        for (int y = 0; y < Configuration.Height; y++)
-        {
-            for (int x = 0; x < Configuration.Width; x++)
-            {
-                if (_calculationArray[x,y].Iterations > _largestIteration)
-                {
-                    _largestIteration = _calculationArray[x, y].Iterations;
-                }
-            }
-        }
     }
 
     protected void CollectCommonCalculations(int x, int y, ulong iterations, Complex z)

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Drawing;
+﻿using SixLabors.ImageSharp;
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -10,7 +10,6 @@ public static class Configuration
     private enum ArgumentOption
     {
         Async,
-        Depth,
         CImaginary,
         CReal,
         Fractal,
@@ -57,11 +56,9 @@ public static class Configuration
     public static double PlaneHeight => Math.Abs(YMax) + Math.Abs(YMin);
     public static double PlaneWidth => Math.Abs(XMax) + Math.Abs(XMin);
 
-    public static bool Async { get; private set; } = true;
     public static string OutputFilePath => Path.Combine(Directory.GetCurrentDirectory(), OutputFileName);
     public static double CImaginary { get; private set; } = 0.75;
     public static double CReal { get; private set; } = -0.2;
-    public static Depths Depth { get; private set; } = Depths.Bits24;
     public static FractalVariations FractalVariation { get; private set; } = FractalVariations.Mandelbrot;
     public static int Height { get; private set; } = 200;
     public static ulong MaxIterations { get; private set; } = 256;
@@ -104,20 +101,12 @@ public static class Configuration
                     {
                         switch (arg.ToUpperInvariant())
                         {
-                            case "-ASYNC":
-                                option = ArgumentOption.Async;
-                                break;
-
                             case "-CIMAG":
                                 option = ArgumentOption.CImaginary;
                                 break;
 
                             case "-CREAL":
                                 option = ArgumentOption.CReal;
-                                break;
-
-                            case "-DEPTH":
-                                option = ArgumentOption.Depth;
                                 break;
 
                             case "-FRACTAL":
@@ -180,14 +169,6 @@ public static class Configuration
                         break;
                     }
 
-                case ArgumentOption.Async:
-                    {
-                        TryParseBool("Async", arg, out bool b);
-                        Async = b;
-                        option = ArgumentOption.Initial;
-                        break;
-                    }
-
                 case ArgumentOption.CImaginary:
                     {
                         TryParseDouble("C imaginary", arg, out double d);
@@ -200,19 +181,6 @@ public static class Configuration
                     {
                         TryParseDouble("C real", arg, out double d);
                         CReal = d;
-                        option = ArgumentOption.Initial;
-                        break;
-                    }
-
-                case ArgumentOption.Depth:
-                    {
-                        Depth = arg switch
-                        {
-                            "8"  => Depths.Bits8,
-                            "24" => Depths.Bits24,
-                            "32" => Depths.Bits32,
-                            _    => throw new ArgumentException($"The passed Depth value is not supported: {arg}."),
-                        };
                         option = ArgumentOption.Initial;
                         break;
                     }
@@ -384,11 +352,11 @@ public static class Configuration
                         float gColorRaw = float.Parse(match.Groups["gColor"].Value);
                         float bColorRaw = float.Parse(match.Groups["bColor"].Value);
 
-                        int rColor = (int)(rColorRaw * 255);
-                        int gColor = (int)(gColorRaw * 255);
-                        int bColor = (int)(bColorRaw * 255);
+                        byte rColor = (byte)(rColorRaw * 255);
+                        byte gColor = (byte)(gColorRaw * 255);
+                        byte bColor = (byte)(bColorRaw * 255);
 
-                        palette[i] = Color.FromArgb(rColor, gColor, bColor);
+                        palette[i] = Color.FromRgb(rColor, gColor, bColor);
                     }
                 }
 
@@ -431,10 +399,8 @@ public static class Configuration
     }
     private static void PrintArgumentFinalSelections()
     {
-        Log.Info($"    Async:              {Async}");
         Log.Info($"    C (Real, Imag):     {CReal}, {CImaginary}");
         Log.Info($"    Center (X, Y):      {XCenter}, {YCenter}");
-        Log.Info($"    Color Depth:        {Depth}");
         Log.Info($"    Fractal:            {FractalVariation}");
         Log.Info($"    Light:              {Light}");
         Log.Info($"    MaxIterations:      {MaxIterations}");

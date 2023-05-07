@@ -1,4 +1,5 @@
 ﻿using System;
+using SixLabors.ImageSharp.PixelFormats;
 
 /*
     Created by Carlos Sánchez López
@@ -46,25 +47,18 @@ public class Program
         Log.Success("--- FRACTAL GENERATOR ---");
         Log.Success("-------------------------");
 
-        try
-        {
-            Configuration.Verify(args);
+        Configuration.Verify(args);
 
-            Fractal fractal = Configuration.FractalVariation switch
-            {
-                FractalVariations.Julia =>      new Julia(),
-                FractalVariations.Mandelbrot => new Mandelbrot(),
-                FractalVariations.Newton =>     new Newton(),
-                FractalVariations.Spiderweb =>  new Spiderweb(),
-                _ => throw new ArgumentException($"Unknown fractal variation: {Configuration.FractalVariation}"),
-            };
-
-            fractal.Generate();
-            Fractal.Open();
-        }
-        catch(Exception e)
+        Fractal fractal = Configuration.FractalVariation switch
         {
-            Log.ExceptionAndExit(e);
-        }
+            FractalVariations.Julia => new Julia(),
+            FractalVariations.Mandelbrot => new Mandelbrot(),
+            FractalVariations.Newton => new Newton(),
+            FractalVariations.Spiderweb => new Spiderweb(),
+            _ => throw new ArgumentException($"Unknown fractal variation: {Configuration.FractalVariation}"),
+        };
+
+        fractal.Generate();
+        fractal.Open();
     }
 }

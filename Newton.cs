@@ -1,5 +1,5 @@
-﻿using System;
-using System.Drawing;
+﻿using SixLabors.ImageSharp;
+using System;
 using System.Numerics;
 
 namespace FractalGenerator;
@@ -59,26 +59,26 @@ public class Newton : Fractal
     /// <returns>A Color instance representing the RGB color of the pixel.</returns>
     protected override Color GetColorForPixel(int x, int y)
     {
-        int r = 0;
-        int g = 0;
-        int b = 0;
+        byte r = 0;
+        byte g = 0;
+        byte b = 0;
 
         if (_calculationArray[x, y].AbsZR1 < TOL)
         {
-            r = 255 - (int)_calculationArray[x, y].Iterations * 15;
+            r = (byte)(255 - _calculationArray[x, y].Iterations * 15);
         }
         if (_calculationArray[x, y].AbsZR2 <= TOL)
         {
-            g = 255 - (int)_calculationArray[x, y].Iterations * 15;
+            g = (byte)(255 - _calculationArray[x, y].Iterations * 15);
         }
         if (_calculationArray[x, y].AbsZR3 <= TOL)
         {
-            b = 255 - (int)_calculationArray[x, y].Iterations * 15;
+            b = (byte)(255 - _calculationArray[x, y].Iterations * 15);
         }
 
-        return Color.FromArgb(
-            r >= 0 ? r : 0,
-            g >= 0 ? g : 0,
-            b >= 0 ? b : 0);
+        return Color.FromRgb(
+            r >= 0 ? r : (byte)0,
+            g >= 0 ? g : (byte)0,
+            b >= 0 ? b : (byte)0);
     }
 }
