@@ -79,13 +79,12 @@ public class Log
     private static void Help()
     {
         Warning($@"Usage:
-[-CIMAG][-CREAL][-DEPTH][-FRACTAL][-H | HELP][-HEIGHT][-ITERATIONS][-LIGHT][-MIX][-OUTPUT][-PALETTE][-RADIUS][-WIDTH][-XCENTER][-YCENTER][-ZOOM]
+[-CIMAG][-CREAL][-FRACTAL][-H | HELP][-HEIGHT][-ITERATIONS][-LIGHT][-MIX][-OUTPUT][-PALETTE][-RADIUS][-WIDTH][-XCENTER][-YCENTER][-ZOOM]
 
 -H | HELP         : Show this help message.
 
 -CIMAG <double>   : For Julia, you can set the imaginary value of C. Default: {Configuration.CImaginary}
 -CREAL <double>   : For Julia, you can set the real value of C. Default: {Configuration.CReal}
--DEPTH <int>      : An integer representing the color depth (bits) of the image. Acceptable values: 8, 24, 32. Default: {((int)Configuration.Depth)}
 -FRACTAL <string> : Fractal variation. Acceptable values: Mandelbrot, Julia, Newton, Spiderweb. Default: {Configuration.FractalVariation}
 -HEIGHT <int>     : Height of the image, in pixels. Must be a positive integer number. Default: {Configuration.Height}
 -ITERATIONS <int> : Iterations inside the algorithm. Must be a positive integer number. The bigger the number, the higher the contrast. Default: {Configuration.MaxIterations}

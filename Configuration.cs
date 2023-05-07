@@ -10,7 +10,6 @@ public static class Configuration
     private enum ArgumentOption
     {
         Async,
-        Depth,
         CImaginary,
         CReal,
         Fractal,
@@ -60,7 +59,6 @@ public static class Configuration
     public static string OutputFilePath => Path.Combine(Directory.GetCurrentDirectory(), OutputFileName);
     public static double CImaginary { get; private set; } = 0.75;
     public static double CReal { get; private set; } = -0.2;
-    public static Depths Depth { get; private set; } = Depths.Bits24;
     public static FractalVariations FractalVariation { get; private set; } = FractalVariations.Mandelbrot;
     public static int Height { get; private set; } = 200;
     public static ulong MaxIterations { get; private set; } = 256;
@@ -109,10 +107,6 @@ public static class Configuration
 
                             case "-CREAL":
                                 option = ArgumentOption.CReal;
-                                break;
-
-                            case "-DEPTH":
-                                option = ArgumentOption.Depth;
                                 break;
 
                             case "-FRACTAL":
@@ -187,19 +181,6 @@ public static class Configuration
                     {
                         TryParseDouble("C real", arg, out double d);
                         CReal = d;
-                        option = ArgumentOption.Initial;
-                        break;
-                    }
-
-                case ArgumentOption.Depth:
-                    {
-                        Depth = arg switch
-                        {
-                            "8"  => Depths.Bits8,
-                            "24" => Depths.Bits24,
-                            "32" => Depths.Bits32,
-                            _    => throw new ArgumentException($"The passed Depth value is not supported: {arg}."),
-                        };
                         option = ArgumentOption.Initial;
                         break;
                     }
@@ -420,7 +401,6 @@ public static class Configuration
     {
         Log.Info($"    C (Real, Imag):     {CReal}, {CImaginary}");
         Log.Info($"    Center (X, Y):      {XCenter}, {YCenter}");
-        Log.Info($"    Color Depth:        {Depth}");
         Log.Info($"    Fractal:            {FractalVariation}");
         Log.Info($"    Light:              {Light}");
         Log.Info($"    MaxIterations:      {MaxIterations}");

@@ -77,8 +77,8 @@ public class Newton : Fractal
         }
 
         return Color.FromRgb(
-            r >= 0 ? r : 0,
-            g >= 0 ? g : 0,
-            b >= 0 ? b : 0);
+            r >= 0 ? r : (byte)0,
+            g >= 0 ? g : (byte)0,
+            b >= 0 ? b : (byte)0);
     }
 }

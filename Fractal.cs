@@ -1,4 +1,5 @@
 ﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -9,30 +10,24 @@ namespace FractalGenerator;
 public abstract class Fractal
 {
     protected const int ColorBitDepth = 255;
-
-    private bool _isCalculated;
-    private readonly Painter _painter;
+    private readonly Image<Rgb24> _image;
     protected Calculation[,] _calculationArray;
-    protected ulong _largestIteration;
-    protected double _largestIterationLog;
 
     public Fractal()
     {
         Log.Info($"Generating a '{Configuration.FractalVariation}' fractal...");
 
-        _isCalculated = false;
-        _painter = new Painter();
+        _image = new Image<Rgb24>(Configuration.Width, Configuration.Height);
         _calculationArray = new Calculation[Configuration.Width, Configuration.Height];
-        _largestIteration = 1;
     }
 
     public void Generate()
     {
         Calculate();
-        Paint();
+        Save();
     }
 
-    public static void Open()
+    public void Open()
     {
         if (!File.Exists(Configuration.OutputFilePath))
         {
@@ -51,84 +46,42 @@ public abstract class Fractal
         process.Start();
     }
 
+    private void Save()
+    {
+        Log.Info("Saving file...");
+        _image.Save(Configuration.OutputFileName);
+        _image.Dispose();
+    }
+
     private void Calculate()
     {
         Log.Info("Calculating fractal: ");
 
-        for (int x = 0; x < Configuration.Width; x++)
+        _image.ProcessPixelRows(accessor =>
         {
-            CalculateCallback(x);
-        }
-
+            for (int y = 0; y < accessor.Height; y++)
+            {
+                double v = ConvertPixelToVertical(y);
+                Span<Rgb24> pixelRow = accessor.GetRowSpan(y);
+                CalculateRow(y, v, pixelRow);
+            }
+        });
         Log.Line();
         Log.Success("Calculation finished!");
-
-        _isCalculated = true;
     }
 
-    private void Paint()
+    private void CalculateRow(int y, double v, Span<Rgb24> pixelRow)
     {
-        if (!_isCalculated)
+        for (int x = 0; x < pixelRow.Length; x++)
         {
-            throw new InvalidOperationException("Must call Calculate before calling Paint!");
-        }
-
-        Log.Info("Painting fractal: ");
-
-        _painter.Lock();
-
-        for (int x = 0; x < Configuration.Width; x++)
-        {
-            PaintCallback(x);
-        }
-
-        _painter.Unlock();
-        _painter.Save();
-
-        Log.Line();
-        Log.Success("Painting finished!");
-    }
-
-    private void CalculateCallback(int x)
-    {
-        double h = ConvertPixelToHorizontal(x);
-
-        for (int y = 0; y < Configuration.Height; y++)
-        {
-            double v = ConvertPixelToVertical(y);
+            double h = ConvertPixelToHorizontal(x);
             Calculate(x, y, h, v);
+            pixelRow[x] = GetColorForPixel(x, y).ToPixel<Rgb24>();
+            
         }
-
-        FindLargestIteration();
 
         // Indicate the column was finished
         Console.Write(".");
-    }
-
-    private void PaintCallback(int x)
-    {
-        for (int y = 0; y < Configuration.Height; y++)
-        {
-            Color color = GetColorForPixel(x, y);
-            _painter.SetPixel(x, y, color);
-        }
-        
-        // One dot = one line
-        Console.Write(".");
-    }
-
-    private void FindLargestIteration()
-    {
-        for (int y = 0; y < Configuration.Height; y++)
-        {
-            for (int x = 0; x < Configuration.Width; x++)
-            {
-                if (_calculationArray[x,y].Iterations > _largestIteration)
-                {
-                    _largestIteration = _calculationArray[x, y].Iterations;
-                }
-            }
-        }
     }
 
     protected void CollectCommonCalculations(int x, int y, ulong iterations, Complex z)
