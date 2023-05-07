@@ -4,14 +4,13 @@ Tool to generate fractal images.
 
 ```
 Usage:
-[-ASYNC][-CIMAG][-CREAL][-DEPTH][-FRACTAL][-H | HELP][-HEIGHT][-ITERATIONS][-LIGHT][-MIX][-OUTPUT][-PALETTE][-RADIUS][-WIDTH][-XCENTER][-YCENTER][-ZOOM]
+[-ASYNC][-CIMAG][-CREAL][-FRACTAL][-H | HELP][-HEIGHT][-ITERATIONS][-LIGHT][-MIX][-OUTPUT][-PALETTE][-RADIUS][-WIDTH][-XCENTER][-YCENTER][-ZOOM]
 
 -H | HELP         : Show this help message.
 
 -ASYNC <boolean>  : Async. Set to 'true' to calculate multithreaded, 'false' for single thread. Default is 'true'.
 -CIMAG <double>   : For Julia, you can set the imaginary value of C. Default: 0.75
 -CREAL <double>   : For Julia, you can set the real value of C. Default: -0.2
--DEPTH <int>      : An integer representing the color depth (bits) of the image. Acceptable values: 8, 24, 32. Default: 24
 -FRACTAL <string> : Fractal variation. Acceptable values: Mandelbrot, Julia, Newton, Spiderweb. Default: Mandelbrot
 -HEIGHT <int>     : Height of the image, in pixels. Must be a positive integer number. Default: 200
 -ITERATIONS <int> : Iterations inside the algorithm. Must be a positive integer number. The bigger the number, the higher the contrast. Default: 256
