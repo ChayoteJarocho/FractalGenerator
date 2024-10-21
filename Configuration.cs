@@ -1,6 +1,7 @@
 ﻿using SixLabors.ImageSharp;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace FractalGenerator;
@@ -41,7 +42,7 @@ public static class Configuration
     public static readonly Color[] ArrayMixPalette = new Color[DefaultPaletteArrayLength];
 
     public static readonly double Log2 = Math.Log(2.0);
-    public static readonly string AbsolutePathPalettes = Path.Combine(Directory.GetCurrentDirectory(), FolderNamePalettes);
+    public static readonly string AbsolutePathPalettes = Path.Combine(Path.GetDirectoryName(Assembly.GetAssembly(typeof(Program))!.Location) ?? Directory.GetCurrentDirectory(), FolderNamePalettes);
 
     public static string PaletteFilePath => Path.Combine(AbsolutePathPalettes, PaletteFileName);
     public static string MixPaletteFilePath => (!string.IsNullOrWhiteSpace(MixPaletteFileName)) ?
@@ -83,18 +84,8 @@ public static class Configuration
     {
         ArgumentOption option = ArgumentOption.Initial;
 
-        string arg;
-        foreach (string argument in arguments)
+        foreach (string arg in arguments)
         {
-            if (option != ArgumentOption.Fractal)
-            {
-                arg = argument.ToUpperInvariant();
-            }
-            else
-            {
-                arg = argument;
-            }
-
             switch (option)
             {
                 case ArgumentOption.Initial:
